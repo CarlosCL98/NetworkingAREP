@@ -8,11 +8,11 @@ import java.net.URL;
 import java.util.Scanner;
 
 /**
- * Page Reader reads a URL and turns it into an html file.
+ * The Sockets reads a URL and turns it into an html file.
  *
  * @author Carlos Medina
  */
-public class PageReader {
+public class Browser {
 
     public static void main (String[] args) {
 

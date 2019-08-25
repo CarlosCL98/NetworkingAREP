@@ -15,7 +15,7 @@ public class URLReader {
 
         try {
             System.out.println("Reading URL...");
-            url = new URL("https://www.google.com:80/src/main/arep/index.html?data=54#AREP2019");
+            url = new URL("https://schinotes.herokuapp.com:80/register/index.html?data=54#AREP2019");
             System.out.println("--------Protocol--------");
             String protocol = url.getProtocol();
             System.out.println(protocol);
