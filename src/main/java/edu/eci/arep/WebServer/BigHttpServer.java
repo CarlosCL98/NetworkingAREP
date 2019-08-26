@@ -10,6 +10,8 @@ import java.util.Date;
 
 /**
  * Big Http Server implements a web server that can return html, images and other files.
+ *
+ * @author Carlos Medina
  */
 public class BigHttpServer {
 
@@ -67,27 +69,27 @@ public class BigHttpServer {
                     File file = null;
                     if (header[1].equals("/")) {
                         file = new File(ROOT, DEFAULT_FILE);
-                        sendRequest(out, dataOut, file, contentType, "200 OK");
+                        sendResponse(out, dataOut, file, contentType, "200 OK");
                     } else {
                         file = new File(ROOT, header[1]);
                         if (!file.exists()) {
                             File newFile = new File(ROOT, NOT_FOUND);
-                            sendRequest(out, dataOut, newFile, "text/html", "404 NOT_FOUND");
+                            sendResponse(out, dataOut, newFile, "text/html", "404 NOT_FOUND");
                         } else {
                             String[] responseContentType = checkContentType(out, dataOut, header[1]);
                             contentType = responseContentType[0];
                             if (responseContentType[1].equals("UNSUPPORTED_MEDIA_TYPE")) {
                                 file = new File(ROOT, UNSUPPORTED_MEDIA_TYPE);
-                                sendRequest(out, dataOut, file, contentType, "415 UNSUPPORTED_MEDIA_TYPE");
+                                sendResponse(out, dataOut, file, contentType, "415 UNSUPPORTED_MEDIA_TYPE");
                             } else if (responseContentType[1].equals("OK")) {
-                                sendRequest(out, dataOut, file, contentType, "200 OK");
+                                sendResponse(out, dataOut, file, contentType, "200 OK");
                             }
                         }
                     }
                 } else {
                     if (responseMethod[1].equals("METHOD_NOT_ALLOWED")) {
                         File file = new File(ROOT, METHOD_NOT_ALLOWED);
-                        sendRequest(out, dataOut, file, "text/html", "405 METHOD_NOT_ALLOWED");
+                        sendResponse(out, dataOut, file, "text/html", "405 METHOD_NOT_ALLOWED");
                     }
                 }
             }
@@ -101,6 +103,16 @@ public class BigHttpServer {
         }
     }
 
+    /**
+     * Checks the HTTP method sent by the client to determine if the
+     * server can or cannot response to it.
+     *
+     * @param out
+     * @param dataOut
+     * @param method
+     * @return String[] : the response.
+     * @throws IOException
+     */
     private static String[] checkMethod(PrintWriter out, BufferedOutputStream dataOut, String method) throws IOException {
         String[] response = new String[2];
         response[0] = "true";
@@ -112,6 +124,16 @@ public class BigHttpServer {
         return response;
     }
 
+    /**
+     * Checks the content type sent by the client to determine if the
+     * server can or cannot response to it.
+     *
+     * @param out
+     * @param dataOut
+     * @param requestedFile
+     * @return String[] : the response.
+     * @throws IOException
+     */
     private static String[] checkContentType(PrintWriter out, BufferedOutputStream dataOut, String requestedFile) throws IOException {
         String[] response = new String[2];
         response[0] = "text/html";
@@ -122,13 +144,23 @@ public class BigHttpServer {
             response[0] = "image/png";
         } else if (requestedFile.endsWith(".jpg") || requestedFile.endsWith(".jpeg")) {
             response[0] = "image/jpeg";
-        } else{
+        } else {
             response[1] = "UNSUPPORTED_MEDIA_TYPE";
         }
         return response;
     }
 
-    private static void sendRequest(PrintWriter out, BufferedOutputStream dataOut, File file, String contentType, String response) throws IOException {
+    /**
+     * Send the response when the server filter the request.
+     *
+     * @param out
+     * @param dataOut
+     * @param file
+     * @param contentType
+     * @param response
+     * @throws IOException
+     */
+    private static void sendResponse(PrintWriter out, BufferedOutputStream dataOut, File file, String contentType, String response) throws IOException {
         // Header
         out.println("HTTP/1.1 " + response);
         out.println("Server: Java HTTP Server from CarlosCL : 1.0");
@@ -152,6 +184,13 @@ public class BigHttpServer {
         }
     }
 
+    /**
+     * Convert the file to bytes to send it to the client.
+     *
+     * @param file
+     * @return byte[] : file in form of bytes.
+     * @throws IOException
+     */
     private static byte[] fileToByte(File file) throws IOException {
         byte[] dataByte = new byte[(int) file.length()];
         FileInputStream fileIn = null;
